@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Study Plan — 11 Aug to 19 Sep (Class 12)</title>
+  <style>
+    :root{
+      --blue:#2f6fb2;
+      --muted:#666;
+      --bg:#f6f8fb;
+      --card:#ffffff;
+      --ok:#2e7d32;
+      --danger:#c62828;
+      --accent:#4F81BD;
+    }
+    html,body{height:100%; margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial; background:var(--bg); color:#111;}
+    .wrap{max-width:1200px; margin:18px auto; padding:18px;}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px; margin-bottom:14px;}
+    header h1{margin:0;font-size:20px;color:var(--blue);}
+    header .sub{font-size:13px;color:var(--muted);}
+    .controls{display:flex; gap:8px; flex-wrap:wrap;}
+    button, .btn {
+      background:var(--accent); color:white; border:0; padding:8px 12px; border-radius:6px; cursor:pointer;
+      font-weight:600; font-size:13px;
+    }
+    button.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent); }
+    button.warn { background:var(--danger); }
+    .top-row{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px; align-items:center;}
+    .legend{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center; font-size:13px; color:var(--muted);
+      padding:10px 12px; background:var(--card); border-radius:8px; box-shadow:0 2px 6px rgba(20,30,60,0.04);
+    }
+    .legend .item{display:flex; gap:8px; align-items:center;}
+    .swatch{width:14px;height:14px;border-radius:3px;display:inline-block;}
+    .sw-main{background:#4F81BD} .sw-pr{background:#8BC34A} .sw-rec{background:#FFCC00} .sw-lit{background:#9C27B0}
+    .table-wrap { overflow:auto; background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.9)); padding:12px; border-radius:8px; box-shadow:0 4px 14px rgba(20,30,60,0.06); }
+    table.plan { width:100%; border-collapse:collapse; min-width:1000px; font-size:13px; }
+    table.plan thead th {
+      background:var(--blue); color:white; padding:10px 8px; text-align:left; font-weight:700; position:sticky; top:0; z-index:2;
+    }
+    table.plan td, table.plan th { padding:10px 8px; border-bottom:1px solid #e8eef6; vertical-align:top;}
+    table.plan tr:nth-child(even) td { background: #fcfeff; }
+    .col-time {width:110px; color:var(--muted); font-size:12px;}
+    .task { font-weight:600; color:#0b2340; margin-bottom:6px; }
+    .subtask { color:var(--muted); font-size:13px; }
+    .chk { display:flex; align-items:center; justify-content:center; }
+    input[type="checkbox"]{ width:20px; height:20px; cursor:pointer; }
+    .date-col { font-weight:700; color:var(--blue); width:110px; }
+    .small{font-size:12px;color:var(--muted);}
+    footer{margin-top:12px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;}
+    .legend-compact{display:flex; gap:6px; align-items:center;}
+    .actions{display:flex;gap:8px; align-items:center;}
+    .search{padding:8px;border-radius:8px;border:1px solid #dfeaf7;background:white; width:220px;}
+    .filters{display:flex; gap:8px; align-items:center;}
+    @media (max-width:900px){
+      .date-col, .col-time { width:95px; font-size:12px; }
+      table.plan { min-width:900px; }
+    }
+
+    /* print */
+    @media print {
+      body, html { background:white; color:#000; }
+      header, .controls, .actions, .search, .filters { display:none !important; }
+      .table-wrap { box-shadow:none; padding:0; }
+      table.plan thead th { position:static; }
+      table.plan td, table.plan th { font-size:11px; padding:6px; }
+    }
+
+    /* accessibility focus */
+    input[type="checkbox"]:focus { outline:3px solid rgba(79,129,189,0.25); border-radius:4px;}
+    button:focus { outline:3px solid rgba(79,129,189,0.2); }
+  </style>
+</head>
+<body>
+  <div class="wrap" role="application" aria-label="Study plan 11 August to 19 September">
+    <header>
+      <div>
+        <h1>Study Plan — 11 Aug → 19 Sep (Class 12, ISC)</h1>
+        <div class="sub">Focused one-pass plan + exam-phase revision. Auto-saves progress to your browser.</div>
+      </div>
+
+      <div class="controls">
+        <input id="search" class="search" placeholder="Search date, subject, keyword..." />
+        <div class="filters small">
+          <label><input id="showDone" type="checkbox" /> Show done</label>
+        </div>
+        <div class="actions">
+          <button id="exportCsv">Export CSV</button>
+          <button id="printBtn" class="ghost">Print / Save PDF</button>
+          <button id="resetBtn" class="warn">Reset progress</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="top-row">
+      <div class="legend" aria-hidden="true">
+        <div class="item"><span class="swatch sw-main"></span> <strong>Main (4:15–5:15)</strong></div>
+        <div class="item"><span class="swatch sw-pr"></span> <strong>Practice (5:25–6:25)</strong></div>
+        <div class="item"><span class="swatch sw-rec"></span> <strong>Recap (6:45–7:30)</strong></div>
+        <div class="item"><span class="swatch sw-lit"></span> <strong>Light (8:00–9:00)</strong></div>
+      </div>
+      <div class="small">Tip: Use the search box to find a topic quickly. Print after ticking to save a snapshot.</div>
+    </div>
+
+    <div class="table-wrap" role="region" aria-label="Study schedule table">
+      <table class="plan" id="planTable">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th class="col-time">Main (4:15–5:15)</th>
+            <th class="col-time">Practice (5:25–6:25)</th>
+            <th class="col-time">Recap (6:45–7:30)</th>
+            <th class="col-time">Light (8:00–9:00)</th>
+            <th style="width:40px;text-align:center">Done</th>
+          </tr>
+        </thead>
+        <tbody id="planBody">
+          <!-- populated by JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <footer>
+      <div class="legend-compact small">Sleeping target: <strong>10:30pm–6:00am</strong> · Exercise: <strong>4pm (15 min)</strong> & <strong>6:25pm (20 min)</strong></div>
+      <div class="small">Made for Greenwood High — follow timings for best results. Your progress is stored locally.</div>
+    </footer>
+  </div>
+
+  <script>
+    // Data: plan rows from 11 Aug to 19 Sep (one-pass + exam-phase revision)
+    const PLAN = [
+      ["11 Aug", "Legal Studies: Units 1–2", "Case laws U1–2", "Mind maps U1–2", "Lit: Macbeth Act 3 reading"],
+      ["12 Aug", "Legal Studies: Units 3–4", "Past Qs U1–4", "Keywords recall", "Lit: 'Atithi' prose"],
+      ["13 Aug", "Legal Studies: Units 5–7", "Mixed past paper set", "Mnemonics & key points", "Lit: 'The Cookie Lady' prose"],
+      ["14 Aug", "Commerce: Ch 1–3", "Flowcharts & short notes", "Revise Ch 1–2", "LS recap Units 1–3"],
+      ["15 Aug", "Commerce: Ch 4–5", "Management diagrams", "Revise Ch 3", "LS recap Units 4–5"],
+      ["16 Aug", "Commerce: Ch 6–8", "Short Qs practice", "Revise Ch 4–5", "LS recap Units 6–7"],
+      ["17 Aug", "Commerce: Ch 13–15", "Marketing diagrams", "Revise Ch 6–8", "LS full skim"],
+      ["18 Aug", "Lit: Macbeth Act 3–4", "Write 2 Act answers", "Revise Act 3–4 quotes", "Commerce recap Ch 1–3"],
+      ["19 Aug", "Lit: Macbeth Act 5 Scene 1", "Write 2 Act 5 answers", "Revise Act 5 quotes", "Commerce recap Ch 4–5"],
+      ["20 Aug", "Poems: Telephone Conversation, Beethoven", "Poem Qs", "Poem theme recall", "Commerce recap Ch 6–8"],
+      ["21 Aug", "Economics: Ch 2–4 (Demand, Consumer Theory)", "Graphs & numerical practice", "Formula recall", "Lit recap Macbeth"],
+      ["22 Aug", "Economics: Ch 5–7 (Supply & Returns)", "Diagram practice", "Revise Ch 2–4", "Lit recap Prose"],
+      ["23 Aug", "Economics: Ch 8–11 (Cost, Revenue, Producer Equilibrium)", "Mixed numericals", "Revise Ch 5–7", "Lit recap Poems"],
+      ["24 Aug", "Accounts: Partnership & Goodwill", "Past problems", "Format recall", "Eco recap Ch 2–4"],
+      ["25 Aug", "Accounts: Admission & Retirement of Partner", "Practice set", "Format recall", "Eco recap Ch 5–7"],
+      ["26 Aug", "Accounts: Issue/Redemption of Shares/Debentures", "Common/Comparative Statements", "Ratio Analysis", "Eco recap Ch 8–11"],
+      ["27 Aug", "English Language: Composition & Directed Writing", "Full paper practice", "Grammar corrections", "Accounts recap Partnership"],
+      ["28 Aug", "English Language: Proposal & Transformation", "Full paper practice", "Preposition drills", "Accounts recap Issue/Redemption"],
+      ["29 Aug", "Revision: Legal Studies (Full syllabus skim)", "Past paper 1", "Quick notes skim", ""],
+      ["30 Aug", "Revision: Legal Studies (Weak areas)", "Past paper 2", "Case law review", ""],
+      ["31 Aug", "Revision: Legal Studies (Mixed Qs)", "Full mock", "Final skim", ""],
+      ["01 Sep", "Commerce: Chapter-wise quick review (1–8)", "Past paper 1", "Quick recall", ""],
+      ["02 Sep", "Commerce: Chapter-wise quick review (13–15)", "Past paper 2", "Marketing recall", ""],
+      ["03 Sep", "Commerce: Full syllabus mock", "Paper correction", "Key terms recall", ""],
+      ["04 Sep", "Literature: Macbeth complete review", "Act-based questions", "Quote recall", ""],
+      ["05 Sep", "Literature: Poems & Prose final review", "Poem analysis", "Theme recall", ""],
+      ["06 Sep", "LEGAL STUDIES — EXAM DAY", "Light recap only", "", ""],
+      ["07 Sep", "COMMERCE — EXAM DAY", "Light recap only", "", ""],
+      ["08 Sep", "Psychology / 1st optional - practicals/rest", "", "", ""],
+      ["09 Sep", "LITERATURE IN ENGLISH — EXAM DAY", "Light recap only", "", ""],
+      ["10 Sep", "PHYSICS Practicals / light day", "", "", ""],
+      ["11 Sep", "3rd optional prep / practicals", "", "", ""],
+      ["12 Sep", "MATHEMATICS / Revision slot", "", "", ""],
+      ["13 Sep", "Practicals or buffer day", "", "", ""],
+      ["14 Sep", "ECONOMICS: Final revision and formulas", "Past paper 1", "Formula recall", ""],
+      ["15 Sep", "ECONOMICS: Full mock & correction", "Paper correction", "Graph recall", ""],
+      ["16 Sep", "ECONOMICS — EXAM DAY", "Light recap only", "", ""],
+      ["17 Sep", "ACCOUNTS: Final revision (Company & tools)", "Past paper 1", "Format recall", ""],
+      ["18 Sep", "ACCOUNTS — EXAM DAY", "Light recap only", "", ""],
+      ["19 Sep", "ENGLISH LANGUAGE — EXAM DAY", "Light recap only", "", ""]
+    ];
+
+    // localStorage key
+    const STORAGE_KEY = 'studyPlanProgress_v1';
+
+    // build table rows
+    function buildTable(filterTerm = '') {
+      const tbody = document.getElementById('planBody');
+      tbody.innerHTML = '';
+      const progress = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      const showDone = !!document.getElementById('showDone').checked;
+
+      for (let i=0;i<PLAN.length;i++){
+        const row = PLAN[i];
+        const date = row[0];
+        const main = row[1] || '';
+        const practice = row[2] || '';
+        const recap = row[3] || '';
+        const light = row[4] || '';
+
+        const searchText = (date+' '+main+' '+practice+' '+recap+' '+light).toLowerCase();
+        if (filterTerm && !searchText.includes(filterTerm.toLowerCase())) continue;
+
+        const doneKey = `${date}::done`;
+        const done = !!progress[doneKey];
+
+        if (!showDone && done) continue;
+
+        const tr = document.createElement('tr');
+
+        tr.innerHTML = `
+          <td class="date-col">${escapeHtml(date)}</td>
+          <td><div class="task">${escapeHtml(main)}</div></td>
+          <td><div class="subtask">${escapeHtml(practice)}</div></td>
+          <td><div class="subtask">${escapeHtml(recap)}</div></td>
+          <td><div class="subtask">${escapeHtml(light)}</div></td>
+          <td class="chk"><input type="checkbox" data-key="${escapeHtml(doneKey)}" ${done ? 'checked' : ''} aria-label="Done ${escapeHtml(date)}" /></td>
+        `;
+        tbody.appendChild(tr);
+      }
+      // add listeners to checkboxes
+      document.querySelectorAll('#planBody input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', (e) => {
+          const key = e.target.dataset.key;
+          const obj = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+          obj[key] = e.target.checked;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+        });
+      });
+    }
+
+    // escape helper
+    function escapeHtml(t){ return String(t).replace(/[&<>"']/g, function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];}); }
+
+    // search input
+    document.getElementById('search').addEventListener('input', (e) => {
+      buildTable(e.target.value.trim());
+    });
+
+    // show done toggle
+    document.getElementById('showDone').addEventListener('change', ()=> buildTable(document.getElementById('search').value.trim()));
+
+    // print
+    document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+    // reset progress
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (!confirm('Reset all saved progress? This cannot be undone.')) return;
+      localStorage.removeItem(STORAGE_KEY);
+      buildTable(document.getElementById('search').value.trim());
+    });
+
+    // export CSV
+    document.getElementById('exportCsv').addEventListener('click', () => {
+      const progress = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      const rows = [['Date','Main','Practice','Recap','Light','Done']];
+      for (const r of PLAN) {
+        const date = r[0];
+        const key = `${date}::done`;
+        const done = progress[key] ? 'YES' : 'NO';
+        rows.push([date, r[1]||'', r[2]||'', r[3]||'', r[4]||'', done]);
+      }
+      const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'study_plan_progress.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // init
+    buildTable();
+
+    // auto-save note: we've already saved per-checkbox; ensure data persists on unload as well
+    window.addEventListener('beforeunload', () => {
+      // nothing required, data saved live
+    });
+
+  </script>
+</body>
+</html>
